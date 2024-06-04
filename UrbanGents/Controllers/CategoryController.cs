@@ -18,6 +18,7 @@ namespace UrbanGents.Controllers
         }
 
 
+        //Creating Category
         public IActionResult Create()
         {
             return View();
@@ -35,9 +36,71 @@ namespace UrbanGents.Controllers
             if (ModelState.IsValid) {
                 _context.Categories.Add(obj);
                 _context.SaveChanges();
+                TempData["success"] = "Category Created Successfully";
                 return RedirectToAction("Index");
             }
             return View();
+        }
+
+
+        //Editing Category
+        public IActionResult Edit(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Category category)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingCategory = _context.Categories.Find(category.Id);
+                if (existingCategory == null)
+                {
+                    return NotFound();
+                }
+
+                existingCategory.Name = category.Name;
+
+                _context.Update(existingCategory);
+                _context.SaveChanges();
+                TempData["success"] = "Category Updated Successfully";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
+        }
+
+
+
+        //Deleting Category
+        public IActionResult Delete(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            _context.Categories.Remove(category);
+            _context.SaveChanges();
+            TempData["success"] = "Category Deleted Successfully";
+            return RedirectToAction(nameof(Index));
         }
     }
 }
